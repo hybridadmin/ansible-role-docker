@@ -1,0 +1,31 @@
+dist: focal
+language: python
+python:
+  - '3.8'
+services:
+  - docker
+env:
+  global:
+    - ROLE_NAME: temp_role_name
+  jobs:
+    - MOLECULE_DISTRO: centos8
+    - MOLECULE_DISTRO: centos7
+    - MOLECULE_DISTRO: fedora32
+    - MOLECULE_DISTRO: fedora31
+    - MOLECULE_DISTRO: ubuntu2004
+    - MOLECULE_DISTRO: ubuntu1804
+cache:
+  - pip
+install:
+  - pip install --upgrade pip
+  - pip install molecule-docker yamllint ansible-lint
+before_script:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  #- cd ../
+  #- GALAXY_ROLE_NAME=$(echo "${ROLE_NAME}" | tr '-' '_')
+  #- mv ansible-role-$ROLE_NAME hybridadmin.$GALAXY_ROLE_NAME
+  #- cd hybridadmin.$GALAXY_ROLE_NAME
+script:
+  - molecule test
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/
