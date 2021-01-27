@@ -1,6 +1,6 @@
 ## Docker Role
 
-> An ansible role to install [docker](https://docs.docker.com/engine/install/) on all supported linux distros, with the ability to choose between the `stable` , `nightly` and `test` release channels.
+> An ansible role to install [`docker`](https://docs.docker.com/engine/install/) on all supported linux distros, with the ability to choose between the `stable` , `nightly` and `test` release channels.
 
 
 ## Requirements
