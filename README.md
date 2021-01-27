@@ -48,4 +48,4 @@ The playbook definition below can be used to deploy docker using the `stable` re
 
 ## Author Information
 
-Created by Hybridadmin.
+Created by [hybridadmin](https://github.com/hybridadmin).
