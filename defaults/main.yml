@@ -1,2 +1,6 @@
 ---
-# defaults file for ansible-role-test1
+
+#docker_release_channel: "nightly"
+
+docker_users: []
+enable_docker_compose: true

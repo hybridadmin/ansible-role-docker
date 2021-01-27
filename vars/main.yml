@@ -1,2 +1,73 @@
 ---
-# vars file for ansible-role-test1
+
+_required_system_packages:
+  default:
+    - curl
+  Debian:
+    - apt-transport-https
+    - ca-certificates
+    - gnupg-agent
+    - software-properties-common
+  Ubuntu:
+    - apt-transport-https
+    - ca-certificates
+    - gnupg-agent
+    - software-properties-common
+  Fedora:
+    - dnf-plugins-core
+  CentOS:
+    7:
+      - yum-utils
+    8:
+      - dnf-plugins-core
+
+# Docker
+docker_arch: "amd64"
+docker_release_channel: "stable"
+
+debian_repo_url: "deb [arch={{ docker_arch }}] https://download.docker.com/linux/{{ ansible_distribution | lower}} {{ ansible_distribution_release | lower}} {{ docker_release_channel }}"
+redhat_repo_url: "https://download.docker.com/linux/{{ ansible_distribution | lower}}/docker-ce.repo"
+
+docker_new_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+
+_docker_old_packages:
+  default:
+    - docker
+    - docker-engine
+  Debian:
+    - docker.io
+    - containerd
+    - runc
+  RedHat:
+    - docker-client
+    - docker-client-latest
+    - docker-common
+    - docker-latest
+    - docker-latest-logrotate
+    - docker-logrotate
+    - docker-selinux
+    - docker-engine-selinux
+
+docker_old_packages: "{{ _docker_old_packages['default'] + _docker_old_packages[ansible_os_family] }}"
+
+docker_users_list: "{% if not docker_users %}['{{ansible_user_id}}']{% else %}{{ docker_users }}{% endif %}"
+
+# Docker Compose
+docker_compose_path: /usr/local/bin/docker-compose
+
+debian_iptables_alternatives:
+  - { name: "iptables", path: "/usr/sbin/iptables-legacy" }
+  - { name: "ip6tables", path:  "/usr/sbin/ip6tables-legacy" }
+
+redhat_pkg_repo_tool: "{% if 'CentOS' in ansible_distribution %}
+                          {% if ansible_distribution_major_version | int <= 7 %}
+                          yum-config-manager
+                          {% else %}
+                          dnf config-manager
+                          {% endif %}
+                        {% else %}
+                        dnf config-manager
+                        {% endif %}"

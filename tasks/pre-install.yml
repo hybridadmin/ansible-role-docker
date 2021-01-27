@@ -1,0 +1,39 @@
+---
+
+- name: remove old docker packages
+  action: >
+    {{ ansible_pkg_mgr }} name={{ docker_old_packages }} state=absent
+  register: pkg_removal_requirements
+  until: pkg_removal_requirements is succeeded
+  retries: 3
+  changed_when: false
+
+- name: delete /var/lib/docker if exists
+  file:
+    state: absent
+    path: "/var/lib/docker"
+  changed_when: false
+
+- name: Centos <= 7 - required packages
+  set_fact:
+    required_system_packages: "{{ _required_system_packages['default'] + _required_system_packages[ansible_distribution].7 }}"
+  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version | int <= 7
+
+- name: Centos > 7 - required packages
+  set_fact:
+    required_system_packages: "{{ _required_system_packages['default'] + _required_system_packages[ansible_distribution].8 }}"
+  when:
+    - ansible_distribution == 'CentOS' and ansible_distribution_major_version | int > 7
+
+- name: all distros add required packages
+  set_fact:
+    required_system_packages: "{{  _required_system_packages['default'] + _required_system_packages[ansible_distribution] }}"
+  when:
+    - ansible_os_family == 'Debian' or ansible_distribution == 'Fedora'
+
+- name: install system packages
+  action: >
+    {{ ansible_pkg_mgr }} name={{ required_system_packages }} state=present update_cache=yes
+  register: system_pkg_requirements
+  until: system_pkg_requirements is succeeded
+  retries: 3

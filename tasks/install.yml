@@ -1,0 +1,43 @@
+---
+
+- name: install docker packages
+  action: >
+    {{ ansible_pkg_mgr }} name={{ docker_new_packages }} state=present update_cache=yes
+  register: pkg_install_requirements
+  until: pkg_install_requirements is succeeded
+  retries: 3
+  changed_when: false
+
+- name: centos - iptables fix for docker
+  shell: |
+    set -o pipefail
+    sed -i '/ExecStart/s/$/ --iptables=false/' /usr/lib/systemd/system/docker.service
+  args:
+    executable: /bin/bash
+  become: true
+  changed_when: false
+  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version | int >= 8
+
+# https://forums.docker.com/t/failing-to-start-dockerd-failed-to-create-nat-chain-docker/78269
+- name: debian - iptables fix for docker
+  alternatives:
+    name: "{{ item.name }}"
+    path: "{{ item.path }}"
+  with_items:
+    - "{{ debian_iptables_alternatives }}"
+  when: ansible_distribution == 'Debian'
+
+- name: restart docker service
+  systemd:
+    name: docker
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+  changed_when: false
+
+- name: add docker users to docker group.
+  user:
+    name: "{{ item }}"
+    groups: docker
+    append: true
+  with_items: "{{ docker_users_list }}"

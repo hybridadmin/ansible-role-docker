@@ -1,0 +1,47 @@
+---
+
+- name: Check docker-compose version if exists
+  shell: |
+    set -o pipefail
+    docker-compose --version
+  args:
+      executable: /bin/bash
+  register: current_docker_compose_version
+  changed_when: false
+  failed_when: false
+
+- name: Delete existing docker-compose version
+  file:
+    path: "{{ docker_compose_path }}"
+    state: absent
+  changed_when: false
+  when: >
+    current_docker_compose_version.stdout is defined
+
+- name: get latest docker-compose version
+  shell: |
+    set -o pipefail
+    curl -sSL https://api.github.com/repos/docker/compose/releases | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | head -n1
+  args:
+      executable: /bin/bash
+  become: true
+  register: docker_compose_version
+  changed_when: false
+
+- name: Get Docker Compose file checksum
+  shell: |
+    set -o pipefail
+    curl -sSL https://github.com/docker/compose/releases/download/{{ docker_compose_version.stdout }}/docker-compose-Linux-x86_64.sha256 | awk '{print $1}'
+  args:
+      executable: /bin/bash
+  become: true
+  register: docker_compose_file_checksum
+  changed_when: false
+
+- name: Install Docker Compose
+  get_url:
+    url: https://github.com/docker/compose/releases/download/{{ docker_compose_version.stdout }}/docker-compose-Linux-x86_64
+    dest: "{{ docker_compose_path }}"
+    mode: 0755
+    checksum: sha256:{{ docker_compose_file_checksum.stdout }}
+  changed_when: false

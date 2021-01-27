@@ -1,2 +1,14 @@
 ---
-# tasks file for ansible-role-test1
+
+- include_tasks: pre-install.yml
+
+- include_tasks: repo-debian.yml
+  when: ansible_os_family == 'Debian'
+
+- include_tasks: repo-redhat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include_tasks: install.yml
+
+- include_tasks: docker-compose.yml
+  when: enable_docker_compose | bool
