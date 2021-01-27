@@ -13,7 +13,9 @@ None
 The variables can be edited in [defaults/main.yml](defaults/main.yml) to customize the deplohyment:
 
 `docker_release_channel` : [default: stable]
+
 `enable_docker_compose` : [default: true]
+
 `docker_users` :
 
 
@@ -39,7 +41,7 @@ The playbook definition below can be used to deploy docker using the `stable` re
 
 ## License
 
-[Apache License](./README.md)
+[Apache License](./LICENSE)
 
 
 ## Author Information
