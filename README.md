@@ -1,4 +1,5 @@
 ## Docker Role
+![CI](https://github.com/hybridadmin/ansible-role-docker/workflows/CI/badge.svg?branch=main)
 
 > An ansible role to install [`docker`](https://docs.docker.com/engine/install/) on all supported linux distros, with the ability to choose between the `stable` , `nightly` and `test` release channels.
 
