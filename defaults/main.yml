@@ -1,6 +1,7 @@
 ---
 
-#docker_release_channel: "nightly"
+docker_release_channel: "stable"
 
 docker_users: []
+
 enable_docker_compose: true

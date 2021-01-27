@@ -1,8 +1,8 @@
 ---
 
-- name: remove old docker packages
+- name: remove legacy docker packages if exists
   action: >
-    {{ ansible_pkg_mgr }} name={{ docker_old_packages }} state=absent
+    {{ ansible_pkg_mgr }} name={{ docker_legacy_packages }} state=absent
   register: pkg_removal_requirements
   until: pkg_removal_requirements is succeeded
   retries: 3

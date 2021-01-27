@@ -23,7 +23,6 @@ _required_system_packages:
 
 # Docker
 docker_arch: "amd64"
-docker_release_channel: "stable"
 
 debian_repo_url: "deb [arch={{ docker_arch }}] https://download.docker.com/linux/{{ ansible_distribution | lower}} {{ ansible_distribution_release | lower}} {{ docker_release_channel }}"
 redhat_repo_url: "https://download.docker.com/linux/{{ ansible_distribution | lower}}/docker-ce.repo"
@@ -33,7 +32,7 @@ docker_new_packages:
   - docker-ce-cli
   - containerd.io
 
-_docker_old_packages:
+_docker_legacy_packages:
   default:
     - docker
     - docker-engine
@@ -51,7 +50,7 @@ _docker_old_packages:
     - docker-selinux
     - docker-engine-selinux
 
-docker_old_packages: "{{ _docker_old_packages['default'] + _docker_old_packages[ansible_os_family] }}"
+docker_legacy_packages: "{{ _docker_legacy_packages['default'] + _docker_legacy_packages[ansible_os_family] }}"
 
 docker_users_list: "{% if not docker_users %}['{{ansible_user_id}}']{% else %}{{ docker_users }}{% endif %}"
 
