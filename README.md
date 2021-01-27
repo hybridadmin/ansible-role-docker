@@ -10,13 +10,14 @@ None
 
 ## Role Variables
 
-The variables can be edited in [defaults/main.yml](defaults/main.yml) to customize the deplohyment:
+The variables below can be edited in [`defaults/main.yml`](defaults/main.yml) to customize the deployment:
 
-`docker_release_channel`:[default: stable] The release channel from which docker should be installed.
+`docker_release_channel`:[default: `stable`] The release channel from which docker should be installed.
 
-`enable_docker_compose `:[default: true] Specify whether docker compose should be installed as well.
+`enable_docker_compose `:[default: `true`] Specify whether docker compose should be installed as well.
 
-`docker_users` : The users that should be added to the docker group. If left empty only the user running the playbook will be added.
+`docker_users` : The users that should be added to the docker group. If left empty only the user running
+the playbook will be added.
 
 
 ## Dependencies
