@@ -1,0 +1,30 @@
+---
+
+- name: add docker users to docker group.
+  user:
+    name: "{{ item }}"
+    groups: docker
+    append: true
+  with_items: "{{ docker_users_list }}"
+
+- name: get docker version
+  shell: |
+    set -o pipefail
+    docker -v | awk '{print $3}'| sed 's/\,//'
+  args:
+      executable: /bin/bash
+  become: true
+  register: docker_version
+  changed_when: false
+
+- name: enable docker buildx plugin as default builder
+  shell: |
+    set -o pipefail
+    docker buildx install
+  args:
+      executable: /bin/bash
+  become: true
+  changed_when: false
+  when: >
+    docker_version.stdout is version('19.03', '>=')
+    and enable_docker_buildx | bool

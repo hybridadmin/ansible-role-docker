@@ -15,6 +15,7 @@ The variables below can be edited in [`defaults/main.yml`](defaults/main.yml) to
 
 * `docker_release_channel`[default: `stable`] - The release channel from which docker should be installed.
 * `enable_docker_compose `[default: `true`] - Specify whether docker compose should be installed as well.
+* `enable_docker_buildx`[default: `true`] - Specify whether to set the buildx plugin as the default builder.
 * `docker_users` - The users that should be added to the docker group. If left empty only the user running
 the playbook will be added.
 

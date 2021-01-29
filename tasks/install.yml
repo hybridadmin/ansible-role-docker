@@ -42,10 +42,3 @@
     daemon_reload: yes
     enabled: yes
   changed_when: false
-
-- name: add docker users to docker group.
-  user:
-    name: "{{ item }}"
-    groups: docker
-    append: true
-  with_items: "{{ docker_users_list }}"
