@@ -17,7 +17,7 @@
   register: docker_version
   changed_when: false
 
-- name: enable docker buildx plugin as default builder
+- name: enable docker buildx as default builder
   shell: |
     set -o pipefail
     docker buildx install
