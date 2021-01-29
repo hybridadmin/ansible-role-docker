@@ -1,7 +1,7 @@
 galaxy_info:
   author: hybridadmin
   role_name: docker
-  description: your role description
+  description: A ansible role to install docker from the stable, nightly or test release channel.
   company: N/A
   license: license (Apache-2.0)
 
@@ -24,7 +24,7 @@ galaxy_info:
      versions:
        - 10
 
-  galaxy_tags: []
+  galaxy_tags:
     - docker
 
 dependencies: []
