@@ -8,6 +8,14 @@
   retries: 3
   changed_when: false
 
+- name: Ensure services are set to start automatically
+  systemd:
+    enabled: yes
+    name: "{{ item }}"
+  changed_when: false
+  with_items:
+    - "{{ docker_services }}"
+
 - name: centos - iptables fix for docker
   shell: |
     set -o pipefail
