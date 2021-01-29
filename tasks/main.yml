@@ -10,5 +10,7 @@
 
 - include_tasks: install.yml
 
+- include_tasks: post-install.yml
+
 - include_tasks: docker-compose.yml
   when: enable_docker_compose | bool
