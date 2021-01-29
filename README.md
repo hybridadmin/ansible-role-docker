@@ -43,7 +43,7 @@ The playbook definition below can be used to deploy docker using the `stable` re
 
 ## License
 
-[Apache License](./LICENSE)
+[Apache License 2.0](./LICENSE)
 
 
 ## Author Information
