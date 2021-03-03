@@ -2,6 +2,6 @@
 - name: Converge
   hosts: all
   tasks:
-    - name: "Include ansible-role-docker"
+    - name: "Include hybridadmin.docker"
       include_role:
-        name: "ansible-role-docker"
+        name: "hybridadmin.docker"

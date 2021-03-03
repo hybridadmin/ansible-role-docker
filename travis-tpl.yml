@@ -6,12 +6,12 @@ services:
   - docker
 env:
   global:
-    - ROLE_NAME: temp_role_name
+    - ROLE_NAME: docker
   jobs:
     - MOLECULE_DISTRO: centos8
     - MOLECULE_DISTRO: centos7
+    - MOLECULE_DISTRO: fedora33
     - MOLECULE_DISTRO: fedora32
-    - MOLECULE_DISTRO: fedora31
     - MOLECULE_DISTRO: ubuntu2004
     - MOLECULE_DISTRO: ubuntu1804
 cache:
@@ -21,10 +21,10 @@ install:
   - pip install molecule-docker yamllint ansible-lint
 before_script:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  #- cd ../
-  #- GALAXY_ROLE_NAME=$(echo "${ROLE_NAME}" | tr '-' '_')
-  #- mv ansible-role-$ROLE_NAME hybridadmin.$GALAXY_ROLE_NAME
-  #- cd hybridadmin.$GALAXY_ROLE_NAME
+  - cd ../
+  - GALAXY_ROLE_NAME=$(echo "${ROLE_NAME}" | tr '-' '_')
+  - mv ansible-role-$ROLE_NAME hybridadmin.$GALAXY_ROLE_NAME
+  - cd hybridadmin.$GALAXY_ROLE_NAME
 script:
   - molecule test
 notifications:
