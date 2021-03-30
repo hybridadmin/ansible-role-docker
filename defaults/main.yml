@@ -1,11 +1,16 @@
 ---
 
+# The release channel to use for docker install
 docker_release_channel: "stable"
 
+# The users to install docker for
 docker_users: []
 
+# Install rootless version of docker
 docker_rootless_install: true
 
-docker_compose_install: true
+# Install Docker Compose
+docker_compose_install: false
 
+# Install buildx as default docker builder
 docker_buildx_install: true

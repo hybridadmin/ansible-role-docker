@@ -2,7 +2,6 @@
 - name: Converge
   hosts: all
   vars:
-    docker_rootless_install: true
     docker_users:
       - tinashe
   tasks:

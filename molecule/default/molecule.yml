@@ -11,6 +11,9 @@ platforms:
   - name: ansible-role-${ROLE_NAME:-docker}-${MOLECULE_DISTRO:-ubuntu}-${MOLECULE_DISTRO_TAG:-focal}
     image: "hybridadmin/ansible-${MOLECULE_DISTRO:-ubuntu}:${MOLECULE_DISTRO_TAG:-focal}"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
+    dns_servers:
+      - 8.8.8.8
+      - 8.8.4.4
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     privileged: true

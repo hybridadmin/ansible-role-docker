@@ -5,6 +5,8 @@
     name: "docker"
     state: stopped
     enabled: no
+    daemon_reload: yes
+  changed_when: false
 
 - name: Create user docker.service directory
   file:
