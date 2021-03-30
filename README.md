@@ -14,12 +14,12 @@ None
 The variables below can be edited in [`defaults/main.yml`](defaults/main.yml) to customize the deployment:
 
 * `docker_release_channel`[default: `stable`] - The release channel from which docker should be installed.
-* `enable_docker_compose `[default: `true`] - Specify whether docker compose should be installed as well.
-* `enable_docker_buildx`[default: `true`] - Specify whether to set the buildx plugin as the default builder.
+* `docker_compose_install `[default: `true`] - Specify whether docker compose should be installed as well.
+* `docker_buildx_install`[default: `true`] - Specify whether to set the buildx plugin as the default builder.
 * `docker_users` - The users that should be added to the docker group. If left empty only the user running
 the playbook will be added.
 
-> Note: When `enable_docker_compose` is `true`, the latest release version from the [`docker compose`](https://github.com/docker/compose) repo is installed.
+> Note: When `docker_compose_install` is `true`, the latest release version from the [`docker compose`](https://github.com/docker/compose) repo is installed.
 
 
 ## Dependencies
@@ -34,7 +34,7 @@ The playbook definition below can be used to deploy docker using the `stable` re
     - hosts: servers
       vars:
         docker_release_channel: "stable"
-        enable_docker_compose: true
+        docker_compose_install: true
         docker_users:
           - user1
           - user2

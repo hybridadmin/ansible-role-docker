@@ -1,0 +1,99 @@
+---
+
+- name: disable docker.service
+  systemd:
+    name: "docker"
+    state: stopped
+    enabled: no
+
+- name: Create user docker.service directory
+  file:
+    path: "/home/{{ item }}/.config/systemd/user"
+    state: directory
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: 0755
+  with_items:
+    - "{{ docker_users_list }}"
+
+- name: Create user docker.service
+  template:
+    src: "systemd/docker.service.j2"
+    dest: "/home/{{ item }}/.config/systemd/user/docker.service"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: 0644
+  with_items:
+    - "{{ docker_users_list }}"
+
+- name: login user(s) for config tasks
+  shell: |
+    set -o pipefail
+    su {{ item }} &
+  args:
+    executable: /bin/bash
+  changed_when: False
+  with_items:
+    - "{{ docker_users_list }}"
+
+- name: enumerate user uid(s)
+  shell: |
+    set -o pipefail
+    id -ru {{ item }}
+  args:
+    executable: /bin/bash
+  changed_when: False
+  register: user_uid_list
+  with_items:
+    - "{{ docker_users_list }}"
+  failed_when: "'error' in user_uid_list.stderr"
+
+- name: Enable user docker.service
+  shell: |
+    set -o pipefail
+    sudo -u {{ item.item }} XDG_RUNTIME_DIR=/run/user/{{ item.stdout }} loginctl enable-linger {{ item.item }}
+  args:
+    executable: /bin/bash
+  become: yes
+  become_user: "{{ item.item }}"
+  changed_when: False
+  with_items:
+    - "{{ user_uid_list.results }}"
+
+- name: Start user docker.service
+  systemd:
+    name: "docker"
+    scope: "user"
+    state: started
+    daemon_reload: yes
+  become: yes
+  become_user: "{{ item.item }}"
+  with_items:
+    - "{{ user_uid_list.results }}"
+  changed_when: false
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ item.stdout }}"
+
+- name: Set rootless environment variables
+  blockinfile:
+    path: "/home/{{ item }}/.bashrc"
+    block: |
+      export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR}
+      export PATH=/usr/bin:{{ ansible_env.PATH }}
+      export DOCKER_HOST=unix://${XDG_RUNTIME_DIR}/docker.sock
+  become: yes
+  become_user: "{{ item }}"
+  with_items:
+    - "{{ docker_users_list }}"
+
+- name: Source docker user(s) .bashrc
+  shell: |
+    set -o pipefail
+    source /home/{{ item }}/.bashrc
+  become: yes
+  become_user: "{{ item }}"
+  args:
+    executable: /bin/bash
+  changed_when: false
+  with_items:
+    - "{{ docker_users_list }}"

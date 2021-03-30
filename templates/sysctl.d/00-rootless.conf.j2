@@ -1,0 +1,15 @@
+{% if ansible_distribution == 'Debian' %}
+# Debian - enable unprivileged user namespace
+kernel.unprivileged_userns_clone=1
+{% endif %}
+
+{% if ansible_distribution == 'CentOS' and ansible_distribution_major_version | int <= 7 %}
+# CentOS 7 - max user namespaces
+user.max_user_namespaces=28633
+{% endif %}
+
+# Routing ping packets
+net.ipv4.ping_group_range = 0 2147483647
+
+# Exposing privileged ports < 1024
+net.ipv4.ip_unprivileged_port_start=0

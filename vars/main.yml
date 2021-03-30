@@ -7,19 +7,42 @@ _required_system_packages:
     - apt-transport-https
     - ca-certificates
     - gnupg-agent
+    - libfuse3-dev
+    - uidmap
+    - policykit-1
+    - systemd-container
     - software-properties-common
   Ubuntu:
     - apt-transport-https
     - ca-certificates
     - gnupg-agent
+    - uidmap
+    - policykit-1
+    - systemd-container
     - software-properties-common
   Fedora:
     - dnf-plugins-core
+    - iptables
+    - polkit
+    - fuse3-devel
+    - shadow-utils
+    - systemd-container
+    - policycoreutils-python-utils
   CentOS:
     7:
       - yum-utils
+      - fuse3-devel
+      - polkit
+      - shadow-utils
+      - systemd
     8:
       - dnf-plugins-core
+      - iptables
+      - polkit
+      - fuse3-devel
+      - shadow-utils
+      - systemd
+      - policycoreutils-python-utils
 
 # Docker
 docker_arch: "amd64"
@@ -57,6 +80,13 @@ _docker_legacy_packages:
 docker_legacy_packages: "{{ _docker_legacy_packages['default'] + _docker_legacy_packages[ansible_os_family] }}"
 
 docker_users_list: "{% if not docker_users %}['{{ansible_user_id}}']{% else %}{{ docker_users }}{% endif %}"
+
+docker_rootless_setup_cmd: |
+      {% if ansible_virtualization_type | regex_search("docker|container") %}
+      /usr/bin/dockerd-rootless-setuptool.sh install --skip-iptables --force
+      {% else %}
+      /usr/bin/dockerd-rootless-setuptool.sh install
+      {% endif %}
 
 # Docker Compose
 docker_compose_path: /usr/local/bin/docker-compose

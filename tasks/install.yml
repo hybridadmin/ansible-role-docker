@@ -8,13 +8,14 @@
   retries: 3
   changed_when: false
 
-- name: Ensure services are set to start automatically
+- name: Set docker services to enabled
   systemd:
     enabled: yes
     name: "{{ item }}"
   changed_when: false
   with_items:
     - "{{ docker_services }}"
+  when: not docker_rootless_install | bool
 
 - name: centos - iptables fix for docker
   shell: |
@@ -24,7 +25,9 @@
     executable: /bin/bash
   become: true
   changed_when: false
-  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version | int >= 8
+  when:
+    - ansible_os_family == 'RedHat' and ansible_distribution_major_version | int >= 8
+    - not docker_rootless_install | bool
 
 # https://forums.docker.com/t/failing-to-start-dockerd-failed-to-create-nat-chain-docker/78269
 - name: debian - iptables fix for docker
@@ -33,7 +36,7 @@
     path: "{{ item.path }}"
   with_items:
     - "{{ debian_iptables_alternatives }}"
-  when: ansible_distribution == 'Debian'
+  when: ansible_distribution == 'Debian' and not docker_rootless_install | bool
 
 - name: restart docker service
   systemd:
@@ -42,3 +45,24 @@
     daemon_reload: yes
     enabled: yes
   changed_when: false
+  when: not docker_rootless_install | bool
+
+- name: add user(s) to docker group
+  user:
+    name: "{{ item }}"
+    groups: docker
+    append: true
+  with_items: "{{ docker_users_list }}"
+
+- name: Add user(s) to sudoers
+  lineinfile:
+    dest: "/etc/sudoers.d/{{ item }}"
+    state: present
+    regexp: '{{ item }}'
+    line: '{{ item }}     ALL=(ALL) NOPASSWD:ALL'
+    mode: 0644
+    create: yes
+    validate: 'visudo -cf %s'
+  with_items:
+    - "{{ docker_users_list }}"
+#  when: not ansible_user_id == 'root'

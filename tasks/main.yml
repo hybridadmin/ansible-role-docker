@@ -10,7 +10,11 @@
 
 - include_tasks: install.yml
 
-- include_tasks: post-install.yml
+- include_tasks: docker-rootless.yml
+  when: docker_rootless_install | bool and docker_users_list is defined
+
+- include_tasks: docker-buildx.yml
+  when: docker_buildx_install | bool
 
 - include_tasks: docker-compose.yml
-  when: enable_docker_compose | bool
+  when: docker_compose_install | bool

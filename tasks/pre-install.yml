@@ -1,5 +1,12 @@
 ---
 
+- name: enable rootless kernel settings
+  template:
+    src: "/sysctl.d/00-rootless.conf.j2"
+    dest: "/etc//sysctl.d/00-rootless.conf"
+    mode: '0644'
+  when: docker_rootless_install | bool and not ansible_user_id == 'root'
+
 - name: remove legacy docker packages if exists
   action: >
     {{ ansible_pkg_mgr }} name={{ docker_legacy_packages }} state=absent
@@ -14,22 +21,36 @@
     path: "/var/lib/docker"
   changed_when: false
 
-- name: Centos <= 7 - required packages
-  set_fact:
-    required_system_packages: "{{ _required_system_packages['default'] + _required_system_packages[ansible_distribution].7 }}"
-  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version | int <= 7
+#- name: Centos <= 7 - required packages
+#  set_fact:
+#    required_system_packages: "{{ _required_system_packages['default'] + _required_system_packages[ansible_distribution].7 }}"
+#  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version | int <= 7
 
-- name: Centos > 7 - required packages
+#- name: Centos > 7 - required packages
+#  set_fact:
+#    required_system_packages: "{{ _required_system_packages['default'] + _required_system_packages[ansible_distribution].8 }}"
+#  when:
+#    - ansible_distribution == 'CentOS' and ansible_distribution_major_version | int > 7
+- name: CentOS - required packages
   set_fact:
-    required_system_packages: "{{ _required_system_packages['default'] + _required_system_packages[ansible_distribution].8 }}"
-  when:
-    - ansible_distribution == 'CentOS' and ansible_distribution_major_version | int > 7
+    required_system_packages: |
+        {% if ansible_distribution == 'CentOS' and ansible_distribution_major_version | int <= 7 %}
+        {{ _required_system_packages['default'] + _required_system_packages[ansible_distribution].7 }}
+        {% else %}
+        {{ _required_system_packages['default'] + _required_system_packages[ansible_distribution].8 }}
+        {% endif %}
+  when: ansible_distribution == 'CentOS'
 
-- name: all distros add required packages
+- name: all distros - required packages
   set_fact:
     required_system_packages: "{{  _required_system_packages['default'] + _required_system_packages[ansible_distribution] }}"
   when:
     - ansible_os_family == 'Debian' or ansible_distribution == 'Fedora'
+
+- name: skip libfuse3-dev packages for ubuntu bionic
+  set_fact:
+    required_system_packages: "{{ required_system_packages | difference('libfuse3-dev') }}"
+  when: ansible_distribution_release is regex('bionic')
 
 - name: install system packages
   action: >
@@ -37,3 +58,18 @@
   register: system_pkg_requirements
   until: system_pkg_requirements is succeeded
   retries: 3
+
+- name: set iptables_t domain to permissive
+  selinux_permissive:
+    name: iptables_t
+    permissive: true
+  when:
+    - ansible_distribution == 'CentOS' and ansible_distribution_major_version | int >= 7
+    - ansible_distribution == 'Fedora'
+
+- name: Add the overlay module
+  community.general.modprobe:
+    name: overlay
+    state: present
+    params: 'permit_mounts_in_userns=1'
+  when: ansible_distribution == 'Debian'and not ansible_virtualization_type | regex_search("docker|container")
