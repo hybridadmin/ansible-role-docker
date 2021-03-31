@@ -95,12 +95,8 @@ debian_iptables_alternatives:
   - { name: "iptables", path: "/usr/sbin/iptables-legacy" }
   - { name: "ip6tables", path:  "/usr/sbin/ip6tables-legacy" }
 
-redhat_pkg_repo_tool: "{% if 'CentOS' in ansible_distribution %}
-                          {% if ansible_distribution_major_version | int <= 7 %}
-                          yum-config-manager
-                          {% else %}
-                          dnf config-manager
-                          {% endif %}
-                        {% else %}
-                        dnf config-manager
-                        {% endif %}"
+redhat_pkg_repo_tool: "{% if 'RedHat' in ansible_os_family and ansible_distribution_major_version | int <= 7 %}
+                       yum-config-manager
+                       {% else %}
+                       dnf config-manager
+                      {% endif %}"
