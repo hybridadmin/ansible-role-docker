@@ -13,8 +13,11 @@
 - name: enable docker buildx as default builder
   shell: |
     set -o pipefail
-    docker buildx install
+    sudo -u {{ item }} XDG_RUNTIME_DIR=/run/user/$(id -u) docker buildx install
   args:
       executable: /bin/bash
   become: true
+  become_user: "{{ item }}"
   changed_when: false
+  with_items:
+    - "{{ docker_users_list }}"
