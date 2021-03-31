@@ -8,6 +8,9 @@
 - include_tasks: repo-redhat.yml
   when: ansible_os_family == 'RedHat'
 
+- include_tasks: docker-slirp4netns.yml
+  when: ansible_distribution_release == 'bionic'
+
 - include_tasks: install.yml
 
 - include_tasks: docker-rootless.yml
