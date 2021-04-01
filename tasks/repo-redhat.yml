@@ -5,7 +5,7 @@
     key: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
     state: present
 
-- name: Redhat - Add docker respository
+- name: Redhat - Add docker Repository
   shell: |
     set -o pipefail
     {{ redhat_pkg_repo_tool }} --add-repo {{ redhat_repo_url }}

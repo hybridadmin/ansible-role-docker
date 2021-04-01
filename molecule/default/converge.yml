@@ -9,12 +9,11 @@
     - name: Add test users
       user:
         name: "{{ item }}"
-        password: ''
         shell: "/bin/bash"
       with_items:
         - "{{ docker_users }}"
 
     - name: "Include hybridadmin.docker"
       include_role:
-        name: "ansible-role-docker"
-#        name: "hybridadmin.docker"
+#        name: "ansible-role-docker"
+        name: "hybridadmin.docker"

@@ -10,7 +10,10 @@ _required_system_packages:
     - libfuse3-dev
     - uidmap
     - policykit-1
+    - dbus
+    - libpam-systemd
     - systemd-container
+    - dbus-user-session
     - software-properties-common
   Ubuntu:
     - apt-transport-https

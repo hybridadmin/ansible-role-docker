@@ -1,13 +1,18 @@
 ---
 
-- name: enable rootless kernel settings
+- name: Enable rootless kernel settings
   template:
-    src: "/sysctl.d/00-rootless.conf.j2"
-    dest: "/etc//sysctl.d/00-rootless.conf"
+    src: "sysctl.d/00-rootless.conf.j2"
+    dest: "/etc/sysctl.d/00-rootless.conf"
     mode: '0644'
-  when: docker_rootless_install | bool and not ansible_user_id == 'root'
+  when: docker_rootless_install | bool
+  notify:
+    - Reload sysctl
 
-- name: remove legacy docker packages if exists
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Remove legacy docker packages
   action: >
     {{ ansible_pkg_mgr }} name={{ docker_legacy_packages }} state=absent
   register: pkg_removal_requirements
@@ -15,7 +20,7 @@
   retries: 3
   changed_when: false
 
-- name: delete /var/lib/docker if exists
+- name: Delete /var/lib/docker if exists
   file:
     state: absent
     path: "/var/lib/docker"
@@ -31,25 +36,25 @@
         {% endif %}
   when: ansible_distribution == 'CentOS'
 
-- name: all distros - required packages
+- name: All distros - required packages
   set_fact:
     required_system_packages: "{{  _required_system_packages['default'] + _required_system_packages[ansible_distribution] }}"
   when:
     - ansible_os_family == 'Debian' or ansible_distribution == 'Fedora'
 
-- name: skip libfuse3-dev packages for ubuntu bionic
+- name: Skip libfuse3-dev packages for ubuntu bionic
   set_fact:
     required_system_packages: "{{ required_system_packages | difference('libfuse3-dev') }}"
   when: ansible_distribution_release is regex('bionic')
 
-- name: install system packages
+- name: Install required system packages
   action: >
     {{ ansible_pkg_mgr }} name={{ required_system_packages }} state=present update_cache=yes
   register: system_pkg_requirements
   until: system_pkg_requirements is succeeded
   retries: 3
 
-- name: set iptables_t domain to permissive
+- name: Set iptables_t domain to permissive
   selinux_permissive:
     name: iptables_t
     permissive: true

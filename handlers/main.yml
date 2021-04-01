@@ -1,1 +1,11 @@
 ---
+
+- name: Reload sysctl
+  shell: |
+    set -o pipefail
+    sysctl -p /etc/sysctl.d/00-rootless.conf
+  args:
+      executable: /bin/bash
+  become: true
+  changed_when: false
+  ignore_errors: yes

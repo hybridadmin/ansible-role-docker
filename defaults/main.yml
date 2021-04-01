@@ -6,8 +6,8 @@ docker_release_channel: "stable"
 # The users to install docker for
 docker_users: []
 
-# Install rootless version of docker
-docker_rootless_install: true
+# Install docker in rootless mode
+docker_rootless_install: false
 
 # Install Docker Compose
 docker_compose_install: false
