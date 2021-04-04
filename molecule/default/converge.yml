@@ -15,5 +15,5 @@
 
     - name: "Include hybridadmin.docker"
       include_role:
-#        name: "ansible-role-docker"
-        name: "hybridadmin.docker"
+        name: "ansible-role-docker"
+#        name: "hybridadmin.docker"

@@ -65,4 +65,4 @@
     validate: 'visudo -cf %s'
   with_items:
     - "{{ docker_users_list }}"
-#  when: not ansible_user_id == 'root'
+#  when: not docker_rootless_install | bool

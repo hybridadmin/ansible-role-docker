@@ -9,3 +9,11 @@
   become: true
   changed_when: false
   ignore_errors: yes
+
+- name: update grub
+  shell: |
+    set -o pipefail
+    update-grub2
+  args:
+    executable: /bin/bash
+  changed_when: False

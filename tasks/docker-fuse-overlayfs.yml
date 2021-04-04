@@ -1,0 +1,43 @@
+---
+
+- name: Check fuse-overlayfs exists
+  stat:
+    path: "/usr/bin/fuse-overlayfs"
+  register: old_fuse_overlayfs_installed
+
+- name: Delete fuse-overlayfs if exists
+  file:
+    path: "{{ item.stat.path }}"
+    state: absent
+  with_items:
+    - "{{ old_fuse_overlayfs_installed }}"
+  when: item.stat.exists | bool
+  changed_when: false
+
+- name: get latest fuse-overlayfs version
+  shell: |
+    set -o pipefail
+    curl -sSL https://api.github.com/repos/containers/fuse-overlayfs/releases | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | head -n1
+  args:
+      executable: /bin/bash
+  become: true
+  register: new_fuse_overlayfs_version
+  changed_when: false
+
+- name: Get fuse-overlayfs download checksum
+  shell: |
+    set -o pipefail
+    curl -sSL https://github.com/containers/fuse-overlayfs/releases/download/{{ new_fuse_overlayfs_version.stdout }}/SHA256SUMS | grep 'x86_64' | awk '{print $1}'
+  args:
+      executable: /bin/bash
+  become: true
+  register: new_fuse_overlayfs_checksum
+  changed_when: false
+
+- name: Install latest fuse-overlayfs
+  get_url:
+    url: https://github.com/containers/fuse-overlayfs/releases/download/{{ new_fuse_overlayfs_version.stdout }}/fuse-overlayfs-x86_64
+    dest: "/usr/bin/fuse-overlayfs"
+    mode: 0755
+    checksum: sha256:{{ new_fuse_overlayfs_checksum.stdout }}
+  changed_when: false

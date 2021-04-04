@@ -19,6 +19,7 @@ _required_system_packages:
     - apt-transport-https
     - ca-certificates
     - gnupg-agent
+    - libfuse3-dev
     - uidmap
     - policykit-1
     - systemd-container

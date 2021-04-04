@@ -11,6 +11,9 @@
 - include_tasks: docker-slirp4netns.yml
   when: ansible_distribution_release == 'bionic'
 
+- include_tasks: docker-fuse-overlayfs.yml
+  when: ansible_distribution_release == 'bionic'
+
 - include_tasks: install.yml
 
 - include_tasks: docker-rootless.yml
