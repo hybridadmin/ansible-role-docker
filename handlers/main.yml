@@ -10,10 +10,69 @@
   changed_when: false
   ignore_errors: yes
 
-- name: update grub
+- name: Update grub bootloader
   shell: |
     set -o pipefail
     update-grub2
   args:
     executable: /bin/bash
   changed_when: False
+
+- name: Enable docker services
+  systemd:
+    enabled: yes
+    name: "{{ item }}"
+  changed_when: false
+  with_items:
+    - "{{ docker_services }}"
+  when: not docker_rootless_install | bool
+
+- name: CentOS - iptables fix for docker
+  shell: |
+    set -o pipefail
+    sed -i '/ExecStart/s/$/ --iptables=false/' /usr/lib/systemd/system/docker.service
+  args:
+    executable: /bin/bash
+  become: true
+  changed_when: false
+  when:
+    - ansible_os_family == 'RedHat' and ansible_distribution_major_version | int >= 8
+    - not docker_rootless_install | bool
+
+# https://forums.docker.com/t/failing-to-start-dockerd-failed-to-create-nat-chain-docker/78269
+- name: Debian - iptables fix for docker
+  alternatives:
+    name: "{{ item.name }}"
+    path: "{{ item.path }}"
+  with_items:
+    - "{{ debian_iptables_alternatives }}"
+  when: ansible_distribution == 'Debian' and not docker_rootless_install | bool
+
+- name: Control docker with daemon.json
+  shell: |
+    set -o pipefail
+    sudo sed -i 's/\ -H\ fd:\/\///g' /lib/systemd/system/docker.service
+  become: yes
+  become_user: "root"
+  args:
+    executable: /bin/bash
+
+- name: Set default OCI runtime
+  template:
+    src: "docker/daemon.json.j2"
+    dest: "/etc/docker/daemon.json"
+    mode: 0644
+  when: docker_default_oci_runtime == 'crun'
+
+- name: Daemon reload
+  systemd:
+    daemon_reload: yes
+
+- name: Restart docker service
+  systemd:
+    name: docker
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+  changed_when: false
+  when: not docker_rootless_install | bool

@@ -7,45 +7,14 @@
   until: pkg_install_requirements is succeeded
   retries: 3
   changed_when: false
-
-- name: Set docker services to enabled
-  systemd:
-    enabled: yes
-    name: "{{ item }}"
-  changed_when: false
-  with_items:
-    - "{{ docker_services }}"
-  when: not docker_rootless_install | bool
-
-- name: centos - iptables fix for docker
-  shell: |
-    set -o pipefail
-    sed -i '/ExecStart/s/$/ --iptables=false/' /usr/lib/systemd/system/docker.service
-  args:
-    executable: /bin/bash
-  become: true
-  changed_when: false
-  when:
-    - ansible_os_family == 'RedHat' and ansible_distribution_major_version | int >= 8
-    - not docker_rootless_install | bool
-
-# https://forums.docker.com/t/failing-to-start-dockerd-failed-to-create-nat-chain-docker/78269
-- name: debian - iptables fix for docker
-  alternatives:
-    name: "{{ item.name }}"
-    path: "{{ item.path }}"
-  with_items:
-    - "{{ debian_iptables_alternatives }}"
-  when: ansible_distribution == 'Debian' and not docker_rootless_install | bool
-
-- name: restart docker service
-  systemd:
-    name: docker
-    state: restarted
-    daemon_reload: yes
-    enabled: yes
-  changed_when: false
-  when: not docker_rootless_install | bool
+  notify:
+    - Enable docker services
+    - CentOS - iptables fix for docker
+    - Debian - iptables fix for docker
+    - Control docker with daemon.json
+    - Set default OCI runtime
+    - Daemon reload
+    - Restart docker service
 
 - name: add user(s) to docker group
   user:
@@ -65,4 +34,3 @@
     validate: 'visudo -cf %s'
   with_items:
     - "{{ docker_users_list }}"
-#  when: not docker_rootless_install | bool

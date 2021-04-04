@@ -19,7 +19,7 @@
     backrefs: yes
   when: cgroup_version_status.stdout is defined and cgroup_version_status.stdout | int == 0
   notify:
-    - update grub
+    - Update grub bootloader
 
 - name: Enable rootless kernel settings
   template:
@@ -70,6 +70,15 @@
   set_fact:
     required_system_packages: "{{ required_system_packages | difference('libfuse3-dev') }}"
   when: ansible_distribution_release is regex('bionic')
+
+- name: Add crun package
+  set_fact:
+    required_system_packages: "{{ required_system_packages + ['crun'] }}"
+  when: >
+    docker_default_oci_runtime == 'crun'
+    and not ( ansible_distribution_release is regex('bionic')
+    or (ansible_distribution == 'CentOS' and ansible_distribution_major_version | int <= 7)
+    or (not ansible_distribution == 'Debian' and ansible_distribution_major_version | int <= 10))
 
 - name: Install required system packages
   action: >
