@@ -31,28 +31,7 @@
     - CentOS - iptables fix for docker
     - Debian - iptables fix for docker
     - Control docker using daemon.json
-    - Daemon reload
     - Start docker service
 
 - name: Flush handlers
   meta: flush_handlers
-
-#- name: Control docker using daemon.json
-#  shell: |
-#    set -o pipefail
-#    sudo sed -i 's/\ -H\ fd:\/\///g' /lib/systemd/system/docker.service
-#  become: yes
-#  args:
-#    executable: /bin/bash
-#  changed_when: false
-
-#- name: Create docker config folder
-#  file:
-#    state: directory
-#    owner: 'root'
-#    group: 'root'
-#    mode: 0755
-#    path: "{{ item }}"
-#  changed_when: false
-#  with_items:
-#    - "/etc/docker"

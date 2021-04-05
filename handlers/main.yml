@@ -62,18 +62,13 @@
     name: docker
     state: started
     daemon_reload: yes
-    enabled: yes
   changed_when: false
   when: not docker_rootless_install | bool
-
-- name: Daemon reload
-  systemd:
-    daemon_reload: yes
 
 - name: Restart docker service
   systemd:
     name: docker
     state: restarted
-#    daemon_reload: yes
+    daemon_reload: yes
   changed_when: false
   when: not docker_rootless_install | bool
