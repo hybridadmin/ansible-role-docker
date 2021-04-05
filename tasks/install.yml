@@ -7,14 +7,6 @@
   until: pkg_install_requirements is succeeded
   retries: 3
   changed_when: false
-  notify:
-    - Enable docker services
-    - CentOS - iptables fix for docker
-    - Debian - iptables fix for docker
-    - Control docker with daemon.json
-    - Set default OCI runtime
-    - Daemon reload
-    - Restart docker service
 
 - name: add user(s) to docker group
   user:
@@ -34,3 +26,33 @@
     validate: 'visudo -cf %s'
   with_items:
     - "{{ docker_users_list }}"
+  notify:
+    - Enable docker services
+    - CentOS - iptables fix for docker
+    - Debian - iptables fix for docker
+    - Control docker using daemon.json
+    - Daemon reload
+    - Start docker service
+
+- name: Flush handlers
+  meta: flush_handlers
+
+#- name: Control docker using daemon.json
+#  shell: |
+#    set -o pipefail
+#    sudo sed -i 's/\ -H\ fd:\/\///g' /lib/systemd/system/docker.service
+#  become: yes
+#  args:
+#    executable: /bin/bash
+#  changed_when: false
+
+#- name: Create docker config folder
+#  file:
+#    state: directory
+#    owner: 'root'
+#    group: 'root'
+#    mode: 0755
+#    path: "{{ item }}"
+#  changed_when: false
+#  with_items:
+#    - "/etc/docker"
