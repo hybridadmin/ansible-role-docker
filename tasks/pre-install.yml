@@ -9,7 +9,9 @@
   changed_when: False
   register: cgroup_version_status
   failed_when: cgroup_version_status.rc > 1
-  when: ansible_kernel.split('.') >= '5.2'.split('.') and not ansible_virtualization_type | regex_search("docker|container")
+  when: >
+    (ansible_kernel.split('.')[0:3] | join('.')) is version('5.2', operator='gt', strict=True)
+    and not ansible_virtualization_type | regex_search("docker|container")
 
 - name: Enable cgroups v2
   lineinfile:
