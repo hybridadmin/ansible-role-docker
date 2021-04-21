@@ -12,7 +12,7 @@
   when: ansible_distribution_release == 'bionic'
 
 - include_tasks: docker-fuse-overlayfs.yml
-  when: ansible_distribution_release == 'bionic'
+  when:  ansible_distribution_release is regex('bionic|xenial')
 
 - include_tasks: install.yml
 

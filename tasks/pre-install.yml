@@ -71,7 +71,7 @@
 - name: Skip libfuse3-dev packages for ubuntu bionic
   set_fact:
     required_system_packages: "{{ required_system_packages | difference('libfuse3-dev') }}"
-  when: ansible_distribution_release is regex('bionic')
+  when: ansible_distribution_release is regex('bionic|xenial')
 
 - name: Install required system packages
   action: >
