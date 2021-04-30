@@ -3,7 +3,7 @@
 - name: Check cgroups v2 is enabled
   shell: |
     set -o pipefail
-    grep GRUB_CMDLINE_LINUX ~/test.conf | grep -c "systemd.unified_cgroup_hierarchy=1"
+    grep GRUB_CMDLINE_LINUX /etc/default/grub | grep -c "systemd.unified_cgroup_hierarchy=1"
   args:
     executable: /bin/bash
   changed_when: False
@@ -12,6 +12,7 @@
   when:
     - (ansible_kernel.split('.')[0:2] | join('.')) is version('5.2', operator='gt', strict=True)
     - not ansible_virtualization_type | regex_search("docker|container")
+    - ansible_env.WSLENV is not defined
 
 - name: Enable cgroups v2
   lineinfile:
@@ -79,6 +80,7 @@
   register: system_pkg_requirements
   until: system_pkg_requirements is succeeded
   retries: 3
+  become: true
 
 - name: Set iptables_t domain to permissive
   selinux_permissive:

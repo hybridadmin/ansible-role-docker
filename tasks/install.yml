@@ -7,6 +7,7 @@
   until: pkg_install_requirements is succeeded
   retries: 3
   changed_when: false
+  become: true
 
 - name: add user(s) to docker group
   user:
@@ -14,6 +15,7 @@
     groups: docker
     append: true
   with_items: "{{ docker_users_list }}"
+  become: true
 
 - name: Add user(s) to sudoers
   lineinfile:
@@ -26,6 +28,7 @@
     validate: 'visudo -cf %s'
   with_items:
     - "{{ docker_users_list }}"
+  become: true
   notify:
     - Enable docker services
     - CentOS - iptables fix for docker

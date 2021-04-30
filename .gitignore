@@ -2,3 +2,6 @@
 *.log
 *.swp
 .tox
+.cache
+*.yml~
+*.*~
