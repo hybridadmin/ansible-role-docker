@@ -8,7 +8,6 @@
       executable: /bin/bash
   become: true
   changed_when: false
-  ignore_errors: yes
 
 - name: Update grub bootloader
   shell: |
