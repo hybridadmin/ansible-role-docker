@@ -8,6 +8,6 @@
 
 - name: Ubuntu - Add docker Repository
   apt_repository:
-    repo: "{{ debian_repo_url }}"
+    repo: "{{ debian_repo_string }}"
     state: present
     update_cache: yes

@@ -6,13 +6,11 @@
   until: pkg_install_requirements is succeeded
   retries: 3
   changed_when: false
-#  become: true
 
 - name: service unit file fix
   shell: |
     set -o pipefail
      sed -i "s/fd:\/\//unix:\/\//g" /lib/systemd/system/docker.service
-#  become: true
   args:
     executable: /bin/bash
   changed_when: false
@@ -23,7 +21,6 @@
     sed -i '/ExecStart/s/$/ --iptables=false/' /usr/lib/systemd/system/docker.service
   args:
     executable: /bin/bash
-#  become: true
   changed_when: false
   when:
     - ansible_os_family == 'RedHat' and ansible_distribution_major_version | int >= 8
@@ -33,7 +30,6 @@
   shell: |
     set -o pipefail
      systemctl daemon-reload
-#  become: true
   args:
     executable: /bin/bash
   changed_when: false
@@ -53,7 +49,6 @@
     groups: docker
     append: true
   with_items: "{{ docker_users_list }}"
-#  become: true
 
 - name: Add user(s) to sudoers
   lineinfile:
@@ -66,9 +61,7 @@
     validate: "visudo -cf %s"
   with_items:
     - "{{ docker_users_list }}"
-#  become: true
   notify:
-#    - Start service
     - Restart service
 
 - name: Flush handlers

@@ -1,17 +1,17 @@
 ---
 - include_tasks: pre-install.yml
 
-- include_tasks: repo-debian.yml
-  when: ansible_os_family == 'Debian'
+- include_tasks: python-install.yml
 
-- include_tasks: repo-redhat.yml
-  when: ansible_os_family == 'RedHat'
+- include_tasks: repo-{{ ansible_os_family | lower }}.yml
 
 - include_tasks: docker-slirp4netns.yml
-  when: ansible_distribution_release == 'bionic'
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version |int >= 18
+#  when: ansible_distribution_release is regex('bionic|focal')
 
 - include_tasks: docker-fuse-overlayfs.yml
-  when: ansible_distribution_release is regex('bionic|xenial')
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version |int <= 18
+#  when: ansible_distribution_release is regex('bionic|xenial')
 
 - include_tasks: install.yml
 
