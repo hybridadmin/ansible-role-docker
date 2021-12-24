@@ -5,7 +5,6 @@
     docker_users:
       - tinashe
   tasks:
-
     - name: Add test users
       user:
         name: "{{ item }}"

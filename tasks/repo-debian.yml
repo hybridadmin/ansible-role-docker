@@ -1,16 +1,13 @@
 ---
-
 - name: Ubuntu - Add docker GPG key
   apt_key:
     url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
     id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
     state: present
   register: add_repository_key
-  become: true
 
 - name: Ubuntu - Add docker Repository
   apt_repository:
     repo: "{{ debian_repo_url }}"
     state: present
     update_cache: yes
-  become: true

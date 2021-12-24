@@ -1,0 +1,12 @@
+- name: Verify
+  hosts: all
+  vars:
+  tasks:
+    - name: verify docker info
+      shell: |
+        set -o pipefail
+        #sudo systemctl restart docker
+        docker info
+      args:
+        executable: /bin/bash
+      changed_when: False

@@ -1,5 +1,4 @@
 ---
-
 - name: Check cgroups v2 is enabled
   shell: |
     set -o pipefail
@@ -28,7 +27,7 @@
   template:
     src: "sysctl.d/00-rootless.conf.j2"
     dest: "/etc/sysctl.d/00-rootless.conf"
-    mode: '0644'
+    mode: "0644"
   when: docker_rootless_install | bool
   notify:
     - Reload sysctl
@@ -56,11 +55,11 @@
 - name: CentOS - required packages
   set_fact:
     required_system_packages: |
-        {% if ansible_distribution == 'CentOS' and ansible_distribution_major_version | int <= 7 %}
-        {{ _required_system_packages['default'] + _required_system_packages[ansible_distribution].7 }}
-        {% else %}
-        {{ _required_system_packages['default'] + _required_system_packages[ansible_distribution].8 }}
-        {% endif %}
+      {% if ansible_distribution == 'CentOS' and ansible_distribution_major_version | int <= 7 %}
+      {{ _required_system_packages['default'] + _required_system_packages[ansible_distribution].7 }}
+      {% else %}
+      {{ _required_system_packages['default'] + _required_system_packages[ansible_distribution].8 }}
+      {% endif %}
   when: ansible_distribution == 'CentOS'
 
 - name: All distros - required packages
@@ -74,13 +73,13 @@
     required_system_packages: "{{ required_system_packages | difference('libfuse3-dev') }}"
   when: ansible_distribution_release is regex('bionic|xenial')
 
-- name: Install required system packages
+- name: Install required packages
   action: >
     {{ ansible_pkg_mgr }} name={{ required_system_packages }} state=present update_cache=yes
   register: system_pkg_requirements
   until: system_pkg_requirements is succeeded
   retries: 3
-  become: true
+#  become: true
 
 - name: Set iptables_t domain to permissive
   selinux_permissive:
@@ -94,5 +93,5 @@
   community.general.modprobe:
     name: overlay
     state: present
-    params: 'permit_mounts_in_userns=1'
+    params: "permit_mounts_in_userns=1"
   when: ansible_distribution == 'Debian'and not ansible_virtualization_type | regex_search("docker|container")

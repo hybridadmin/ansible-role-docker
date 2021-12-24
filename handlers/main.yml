@@ -1,12 +1,11 @@
 ---
-
 - name: Reload sysctl
   shell: |
     set -o pipefail
     sysctl -p /etc/sysctl.d/00-rootless.conf
   args:
-      executable: /bin/bash
-  become: true
+    executable: /bin/bash
+#  become: true
   changed_when: false
 
 - name: Update grub bootloader
@@ -17,7 +16,11 @@
     executable: /bin/bash
   changed_when: False
 
-- name: Enable docker services
+- name: daemon reload
+  systemd:
+    daemon_reload: yes
+
+- name: Enable services
   systemd:
     enabled: yes
     name: "{{ item }}"
@@ -26,50 +29,20 @@
     - "{{ docker_services }}"
   when: not docker_rootless_install | bool
 
-- name: CentOS - iptables fix for docker
-  shell: |
-    set -o pipefail
-    sed -i '/ExecStart/s/$/ --iptables=false/' /usr/lib/systemd/system/docker.service
-  args:
-    executable: /bin/bash
-  become: true
-  changed_when: false
-  when:
-    - ansible_os_family == 'RedHat' and ansible_distribution_major_version | int >= 8
-    - not docker_rootless_install | bool
-
-# https://forums.docker.com/t/failing-to-start-dockerd-failed-to-create-nat-chain-docker/78269
-- name: Debian - iptables fix for docker
-  alternatives:
-    name: "{{ item.name }}"
-    path: "{{ item.path }}"
-  with_items:
-    - "{{ debian_iptables_alternatives }}"
-  when: ansible_distribution == 'Debian' and not docker_rootless_install | bool
-
-- name: Control docker using daemon.json
-  shell: |
-    set -o pipefail
-    sudo sed -i 's/\ -H\ fd:\/\///g' /lib/systemd/system/docker.service
-  become: true
-  args:
-    executable: /bin/bash
-  changed_when: false
-
-- name: Start docker service
+- name: Start service
   systemd:
     name: docker
     state: started
     daemon_reload: yes
   changed_when: false
-  become: true
+#  become: true
   when: not docker_rootless_install | bool
 
-- name: Restart docker service
+- name: Restart service
   systemd:
     name: docker
     state: restarted
     daemon_reload: yes
   changed_when: false
-  become: true
+#  become: true
   when: not docker_rootless_install | bool

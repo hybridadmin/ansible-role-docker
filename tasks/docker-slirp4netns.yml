@@ -1,5 +1,4 @@
 ---
-
 - name: Check slirp4netns exists
   stat:
     path: "/usr/bin/slirp4netns"
@@ -19,7 +18,7 @@
     set -o pipefail
     curl -sSL https://api.github.com/repos/rootless-containers/slirp4netns/releases | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | head -n1
   args:
-      executable: /bin/bash
+    executable: /bin/bash
   become: true
   register: new_slirp4netns_version
   changed_when: false
@@ -29,7 +28,7 @@
     set -o pipefail
     curl -sSL https://github.com/rootless-containers/slirp4netns/releases/download/{{ new_slirp4netns_version.stdout }}/SHA256SUMS | grep 'x86_64' | awk '{print $1}'
   args:
-      executable: /bin/bash
+    executable: /bin/bash
   become: true
   register: new_slirp4netns_checksum
   changed_when: false

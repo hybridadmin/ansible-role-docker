@@ -1,10 +1,9 @@
 ---
-
 # The release channel to use for docker install
 docker_release_channel: "stable"
 
 # Set the default OCI runtime
-docker_default_oci_runtime: 'crun'
+docker_default_oci_runtime: "crun"
 
 # The users to install docker for
 docker_users: []
@@ -14,6 +13,3 @@ docker_rootless_install: false
 
 # Install Docker Compose
 docker_compose_install: false
-
-# Install buildx as default docker builder
-docker_buildx_install: false

@@ -1,5 +1,4 @@
 ---
-
 - include_tasks: pre-install.yml
 
 - include_tasks: repo-debian.yml
@@ -12,7 +11,7 @@
   when: ansible_distribution_release == 'bionic'
 
 - include_tasks: docker-fuse-overlayfs.yml
-  when:  ansible_distribution_release is regex('bionic|xenial')
+  when: ansible_distribution_release is regex('bionic|xenial')
 
 - include_tasks: install.yml
 
@@ -20,7 +19,6 @@
   when: docker_rootless_install | bool and docker_users_list is defined
 
 - include_tasks: docker-buildx.yml
-  when: docker_buildx_install | bool
 
 - include_tasks: docker-compose.yml
   when: docker_compose_install | bool

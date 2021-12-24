@@ -1,5 +1,4 @@
 ---
-
 _required_system_packages:
   default:
     - curl
@@ -86,21 +85,24 @@ docker_legacy_packages: "{{ _docker_legacy_packages['default'] + _docker_legacy_
 docker_users_list: "{% if not docker_users %}['{{ansible_user_id}}']{% else %}{{ docker_users }}{% endif %}"
 
 docker_rootless_setup_cmd: |
-      {% if ansible_virtualization_type | regex_search("docker|container") %}
-      /usr/bin/dockerd-rootless-setuptool.sh install --skip-iptables --force
-      {% else %}
-      /usr/bin/dockerd-rootless-setuptool.sh install
-      {% endif %}
+  {% if ansible_virtualization_type | regex_search("docker|container") %}
+  /usr/bin/dockerd-rootless-setuptool.sh install --skip-iptables --force
+  {% else %}
+  /usr/bin/dockerd-rootless-setuptool.sh install
+  {% endif %}
 
 # Docker Compose
 docker_compose_path: /usr/local/bin/docker-compose
 
 debian_iptables_alternatives:
   - { name: "iptables", path: "/usr/sbin/iptables-legacy" }
-  - { name: "ip6tables", path:  "/usr/sbin/ip6tables-legacy" }
+  - { name: "ip6tables", path: "/usr/sbin/ip6tables-legacy" }
 
-redhat_pkg_repo_tool: "{% if 'RedHat' in ansible_os_family and ansible_distribution_major_version | int <= 7 %}
-                       yum-config-manager
-                       {% else %}
-                       dnf config-manager
-                      {% endif %}"
+redhat_pkg_repo_tool:
+  "{% if 'RedHat' in ansible_os_family and ansible_distribution_major_version | int <= 7 %}
+  yum-config-manager
+  {% else %}
+  dnf config-manager
+  {% endif %}"
+
+docker_restart_cmd: "{% if docker_rootless_install %}systemctl --user restart docker{% else %}systemctl restart docker{% endif %}"

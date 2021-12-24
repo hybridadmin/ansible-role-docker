@@ -1,21 +1,21 @@
 ---
-
 - name: get docker version
   shell: |
     set -o pipefail
+    {{ docker_restart_cmd }}
     docker -v | awk '{print $3}'| sed 's/\,//'
   args:
-      executable: /bin/bash
+    executable: /bin/bash
   become: true
   register: docker_version
   changed_when: false
 
-- name: enable docker buildx as default builder
+- name: Set buildx builder
   shell: |
     set -o pipefail
     sudo -u {{ item }} XDG_RUNTIME_DIR=/run/user/$(id -u) docker buildx install
   args:
-      executable: /bin/bash
+    executable: /bin/bash
   become: true
   become_user: "{{ item }}"
   changed_when: false
