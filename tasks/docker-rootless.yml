@@ -6,7 +6,6 @@
     enabled: no
     daemon_reload: yes
   changed_when: false
-  become: true
 
 - name: Create user docker.service directory
   file:

@@ -6,7 +6,6 @@
     docker -v | awk '{print $3}'| sed 's/\,//'
   args:
     executable: /bin/bash
-#  become: true
   register: docker_version
   changed_when: false
 

@@ -5,7 +5,6 @@
     sysctl -p /etc/sysctl.d/00-rootless.conf
   args:
     executable: /bin/bash
-#  become: true
   changed_when: false
 
 - name: Update grub bootloader
@@ -20,6 +19,12 @@
   systemd:
     daemon_reload: yes
 
+- name: daemon reload
+  systemd:
+    daemon_reload: yes
+  changed_when: false
+  when: not docker_rootless_install | bool
+
 - name: Enable services
   systemd:
     enabled: yes
@@ -33,16 +38,12 @@
   systemd:
     name: docker
     state: started
-    daemon_reload: yes
   changed_when: false
-#  become: true
   when: not docker_rootless_install | bool
 
 - name: Restart service
   systemd:
     name: docker
     state: restarted
-    daemon_reload: yes
   changed_when: false
-#  become: true
   when: not docker_rootless_install | bool

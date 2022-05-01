@@ -79,7 +79,6 @@
   register: system_pkg_requirements
   until: system_pkg_requirements is succeeded
   retries: 3
-#  become: true
 
 - name: Set iptables_t domain to permissive
   selinux_permissive:

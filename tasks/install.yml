@@ -50,6 +50,14 @@
     append: true
   with_items: "{{ docker_users_list }}"
 
+- name: Detect docker group changes
+  shell: |
+    set -o pipefail
+    newgrp docker
+  args:
+    executable: /bin/bash
+  changed_when: false
+
 - name: Add user(s) to sudoers
   lineinfile:
     dest: "/etc/sudoers.d/{{ item }}"
@@ -62,6 +70,7 @@
   with_items:
     - "{{ docker_users_list }}"
   notify:
+    - daemon reload
     - Restart service
 
 - name: Flush handlers
