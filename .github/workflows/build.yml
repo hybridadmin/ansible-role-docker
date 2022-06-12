@@ -22,13 +22,13 @@ jobs:
         with:
           path: "hybridadmin.docker"
 
-      - name: ansible-lint
-        uses: ansible-community/ansible-lint-action@main
-
       - name: yaml-lint
         uses: ibiqlik/action-yamllint@v3
         with:
           config_file: .yamllint
+
+      - name: ansible-lint
+        uses: ansible-community/ansible-lint-action@main
 
   molecule:
     needs:
