@@ -52,12 +52,12 @@ docker_arch: "amd64"
 
 debian_repo_string: |
   {% if docker_release_channel == "stable" %}
-  deb [arch={{ docker_arch }}] https://download.docker.com/linux/{{ ansible_distribution | lower}} {{ ansible_distribution_release | lower}} {{ docker_release_channel }}
+  deb [arch={{ docker_arch }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower }} {{ docker_release_channel }}
   {% else %}
-  deb [arch={{ docker_arch }}] https://download.docker.com/linux/{{ ansible_distribution | lower}} {{ ansible_distribution_release | lower}} stable {{ docker_release_channel }}
+  deb [arch={{ docker_arch }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower }} stable {{ docker_release_channel }}
   {% endif %}
 
-redhat_repo_url: "https://download.docker.com/linux/{{ ansible_distribution | lower}}/docker-ce.repo"
+redhat_repo_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/docker-ce.repo"
 
 docker_services:
   - docker
@@ -88,7 +88,7 @@ _docker_legacy_packages:
 
 docker_legacy_packages: "{{ _docker_legacy_packages['default'] + _docker_legacy_packages[ansible_os_family] }}"
 
-docker_users_list: "{% if not docker_users %}['{{ansible_user_id}}']{% else %}{{ docker_users }}{% endif %}"
+docker_users_list: "{% if not docker_users %}['{{ ansible_user_id }}']{% else %}{{ docker_users }}{% endif %}"
 
 docker_rootless_setup_cmd: |
   {% if ansible_virtualization_type | regex_search("docker|container") %}
