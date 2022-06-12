@@ -22,18 +22,13 @@ jobs:
         with:
           path: "hybridadmin.docker"
 
-      - name: Set up Python 3.
-        uses: actions/setup-python@v2
+      - name: ansible-lint
+        uses: ansible-community/ansible-lint-action@main
+
+      - name: yaml-lint
+        uses: ibiqlik/action-yamllint@v3
         with:
-          python-version: "3.x"
-
-      - name: Install test dependencies.
-        run: pip3 install ansible yamllint ansible-lint
-
-      - name: Lint code.
-        run: |
-          yamllint .
-          ansible-lint
+          config_file: .yamllint
 
   molecule:
     needs:
