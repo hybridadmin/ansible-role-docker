@@ -1,4 +1,5 @@
-warn_list:
+skip_list:
+#warn_list:
   - experimental  # all rules tagged as experimental
   - fqcn-builtins  # Use FQCN for builtin actions.
   - yaml  # Violations reported by yamllint.
