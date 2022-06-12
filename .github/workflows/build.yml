@@ -24,8 +24,8 @@ jobs:
 
       - name: yaml-lint
         uses: ibiqlik/action-yamllint@v3
-        with:
-          config_file: .yamllint
+#        with:
+#          config_file: .yamllint
 
       - name: ansible-lint
         uses: ansible-community/ansible-lint-action@main
