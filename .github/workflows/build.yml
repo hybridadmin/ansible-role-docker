@@ -62,9 +62,6 @@ jobs:
         uses: ansible/ansible-lint-action@master
         with:
           targets: "**/*.yml"
-#          override-deps: |
-#            ansible-lint==5.3.1
-#        uses: ansible-community/ansible-lint-action@main
 
   molecule:
     needs:
