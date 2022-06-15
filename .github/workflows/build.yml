@@ -28,7 +28,6 @@ jobs:
       - name: yaml-lint
         uses: ibiqlik/action-yamllint@v3
         with:
-#          config_file: ./.yamllint
           no_warnings: true
           strict: false
           config_data: |
@@ -60,7 +59,12 @@ jobs:
               truthy: disable
 
       - name: ansible-lint
-        uses: ansible-community/ansible-lint-action@main
+        uses: ansible/ansible-lint-action@master
+        with:
+          targets: "**/*.yml"
+#          override-deps: |
+#            ansible-lint==5.3.1
+#        uses: ansible-community/ansible-lint-action@main
 
   molecule:
     needs:
