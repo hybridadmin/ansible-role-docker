@@ -1,4 +1,5 @@
 ---
+
 - name: get docker version
   shell: |
     set -o pipefail

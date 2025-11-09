@@ -13,6 +13,7 @@ _required_system_packages:
     - libpam-systemd
     - systemd-container
     - dbus-user-session
+    - python3-debian
   Ubuntu:
     - apt-transport-https
     - ca-certificates
@@ -22,6 +23,7 @@ _required_system_packages:
     - policykit-1
     - systemd-container
     - software-properties-common
+    - python3-debian
   Fedora:
     - dnf-plugins-core
     - iptables
@@ -69,6 +71,8 @@ docker_new_packages:
   - docker-ce
   - docker-ce-cli
   - containerd.io
+  - docker-buildx-plugin
+  - docker-compose-plugin
 
 _docker_legacy_packages:
   default:
