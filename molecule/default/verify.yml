@@ -1,6 +1,6 @@
 - name: Verify
   hosts: all
-  vars:
+#  vars:
   tasks:
     - name: verify docker info
       shell: |
