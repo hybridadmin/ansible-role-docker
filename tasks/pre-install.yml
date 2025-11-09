@@ -1,4 +1,5 @@
 ---
+
 - name: Check cgroups v2 is enabled
   shell: |
     set -o pipefail
@@ -51,6 +52,8 @@
   with_items:
     - "/var/lib/docker"
     - "/var/lib/containerd"
+  when:
+    - not ansible_virtualization_type | regex_search("docker|container")
 
 - name: CentOS - required packages
   set_fact:

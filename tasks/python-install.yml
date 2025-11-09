@@ -8,22 +8,6 @@
       loop:
         - "{{ python_requirements }}"
 
-  when: not (ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'xenial')
-
-- name: "latest python3 xenial"
-  block:
-    - name: ubuntu xenial python install fix
-      shell: |
-        set -o pipefail
-        sudo add-apt-repository ppa:deadsnakes/ppa
-        sudo apt-get update -qqy
-        {{ ansible_pkg_mgr }} install -qqy python3.7 python3-pip
-      args:
-        executable: /bin/bash
-      changed_when: false
-
-  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'xenial'
-
 - name: get python executable
   shell: |
     set -o pipefail
@@ -56,3 +40,6 @@
   args:
     executable: /bin/bash
   changed_when: false
+  when:
+   - not (ansible_distribution == 'Debian')
+#   - not (ansible_distribution == 'Debian' and ansible_distribution_major_version | int >= 13)
