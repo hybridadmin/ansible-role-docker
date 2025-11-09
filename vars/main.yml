@@ -13,7 +13,6 @@ _required_system_packages:
     - libpam-systemd
     - systemd-container
     - dbus-user-session
-    - software-properties-common
   Ubuntu:
     - apt-transport-https
     - ca-certificates
