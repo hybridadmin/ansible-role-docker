@@ -1,13 +1,31 @@
 ---
-- name: Ubuntu - Add docker GPG key
-  apt_key:
-    url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
-    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
-    state: present
-  register: add_repository_key
 
-- name: Ubuntu - Add docker Repository
-  apt_repository:
-    repo: "{{ debian_repo_string }}"
-    state: present
-    update_cache: yes
+- name: Add docker repository
+  block:
+    - name: docker-ce | repo key folder
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: docker-ce | apt key
+      ansible.builtin.get_url:
+        url: "https://download.docker.com/linux/{{ ansible_distribution|lower }}/gpg"
+        dest: /etc/apt/keyrings/docker.asc
+
+    - name: docker-ce | apt source - ubuntu
+      ansible.builtin.apt_repository:
+        repo: 'deb [arch={{ docker_arch }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable'
+        state: present
+      when: ansible_distribution|lower == 'ubuntu'
+
+    - name: docker-ce | apt source - debian
+      deb822_repository:
+        name: docker-ce
+        types: deb
+        uris: 'https://download.docker.com/linux/{{ ansible_distribution|lower }}'
+        suites: '{{ ansible_distribution_release }}'
+        components: stable
+        architectures: '{{ docker_arch }}'
+        signed_by: 'https://download.docker.com/linux/{{ ansible_distribution|lower }}/gpg'
+      when: ansible_distribution|lower == 'debian'

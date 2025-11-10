@@ -1,4 +1,5 @@
 ---
+
 _required_system_packages:
   default:
     - curl
@@ -8,12 +9,11 @@ _required_system_packages:
     - gnupg-agent
     - libfuse3-dev
     - uidmap
-    - policykit-1
     - dbus
     - libpam-systemd
     - systemd-container
     - dbus-user-session
-    - software-properties-common
+    - python3-debian
   Ubuntu:
     - apt-transport-https
     - ca-certificates
@@ -23,6 +23,7 @@ _required_system_packages:
     - policykit-1
     - systemd-container
     - software-properties-common
+    - python3-debian
   Fedora:
     - dnf-plugins-core
     - iptables
@@ -50,14 +51,17 @@ _required_system_packages:
 # Docker
 docker_arch: "amd64"
 
+_redhat_repo_cmd:
+  Fedora: "dnf-3 config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo"
+  RedHat: "dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo"
+redhat_repo_cmd: "{{ _redhat_repo_cmd[ansible_distribution] }}"
+
 debian_repo_string: |
   {% if docker_release_channel == "stable" %}
   deb [arch={{ docker_arch }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower }} {{ docker_release_channel }}
   {% else %}
   deb [arch={{ docker_arch }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower }} stable {{ docker_release_channel }}
   {% endif %}
-
-redhat_repo_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/docker-ce.repo"
 
 docker_services:
   - docker
@@ -67,6 +71,8 @@ docker_new_packages:
   - docker-ce
   - docker-ce-cli
   - containerd.io
+  - docker-buildx-plugin
+  - docker-compose-plugin
 
 _docker_legacy_packages:
   default:
@@ -83,8 +89,6 @@ _docker_legacy_packages:
     - docker-latest
     - docker-latest-logrotate
     - docker-logrotate
-    - docker-selinux
-    - docker-engine-selinux
 
 docker_legacy_packages: "{{ _docker_legacy_packages['default'] + _docker_legacy_packages[ansible_os_family] }}"
 
@@ -103,13 +107,6 @@ docker_compose_path: /usr/local/bin/docker-compose
 debian_iptables_alternatives:
   - { name: "iptables", path: "/usr/sbin/iptables-legacy" }
   - { name: "ip6tables", path: "/usr/sbin/ip6tables-legacy" }
-
-redhat_pkg_repo_tool:
-  "{% if 'RedHat' in ansible_os_family and ansible_distribution_major_version | int <= 7 %}
-  yum-config-manager
-  {% else %}
-  dnf config-manager
-  {% endif %}"
 
 docker_restart_cmd: "{% if docker_rootless_install %}systemctl --user restart docker{% else %}systemctl restart docker{% endif %}"
 

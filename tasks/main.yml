@@ -19,6 +19,3 @@
   when: docker_rootless_install | bool and docker_users_list is defined
 
 - include_tasks: docker-buildx.yml
-
-- include_tasks: docker-compose.yml
-  when: docker_compose_install | bool
