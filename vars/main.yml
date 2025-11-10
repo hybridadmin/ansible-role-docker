@@ -89,8 +89,6 @@ _docker_legacy_packages:
     - docker-latest
     - docker-latest-logrotate
     - docker-logrotate
-    - docker-selinux
-    - docker-engine-selinux
 
 docker_legacy_packages: "{{ _docker_legacy_packages['default'] + _docker_legacy_packages[ansible_os_family] }}"
 
